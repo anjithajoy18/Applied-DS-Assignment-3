@@ -5,6 +5,8 @@ Spyder Editor
 This is a temporary script file.
 """
 
+#Importing required packages
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +28,8 @@ def read_and_filter_csv(file_name):
 
     file_data = pd.read_csv(file_name)
     dataFr = pd.DataFrame(file_data)
-    dataFr = dataFr[['2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011']]
+    dataFr = dataFr[['2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007',
+                     '2008', '2009', '2010', '2011']]
     dataFr = dataFr.iloc[61:76]
     print(file_data)
     print(dataFr)
@@ -34,9 +37,12 @@ def read_and_filter_csv(file_name):
 
 
 
-
 #pair plot comparing the two data
 def pair_plot():
+    """
+    The function helps is creating the pair plot of greenhouse gas emission
+    and the methane gas emission.As well to find the k- means clusters of the data
+    """
     
     data_frame_plot = pd.DataFrame()
     greengas = []
@@ -53,10 +59,11 @@ def pair_plot():
 
     type(data_frame_plot)
 
+    #Plottting the data
     sns.pairplot(data_frame_plot[['methane','greengas']])
     plt.savefig("graphs//pair plot.png")
 
-    '''function for finding K means clusttering'''
+    #function for finding K means clusttering
     kmeans1 = KMeans(n_clusters=3, random_state=0).fit(data_frame_plot[['methane','greengas']])
     kmeans1.inertia_
     kmeans1.cluster_centers_
@@ -65,18 +72,23 @@ def pair_plot():
     return data_frame_plot
 
 
-
+#Scatter plot with K means clustering before and afer normalization
 def scatter_k_plot(data_k_plot):
+    """ 
+    The function is used to find the K-mean clusters and also to construct the 
+    scatter plot with and without normalizing the data.
+    data_k_plot :- the data frame with greenhouse and methane emission data
+    """
     
-    '''plot for K means clusttering before normalisation'''
+    
+    #plot for K means clusttering before normalisation
     plt.figure()
     sns.scatterplot(x = 'greengas', y = 'methane' , hue='cluster', data = data_k_plot)
     plt.title("K-Means before normalisation")
     plt.savefig("graphs//Scatter of K-mean.png")
     plt.show()
 
-    data_k = data_fr.drop(['cluster'], axis = 1)
-    '''function called for clusttering'''
+    data_k = data_fr.drop(['cluster'], axis = 1)    
     names = ['greengas','methane']
     a = preprocessing.normalize(data_k, axis=0)
     data_aft_k = pd.DataFrame(a,columns=names)
@@ -84,8 +96,8 @@ def scatter_k_plot(data_k_plot):
     kmeans2.inertia_
     kmeans2.cluster_centers_
     data_aft_k['cluster'] = kmeans2.labels_
-    '''cluster shown along the data'''
-    '''plot for K means clusttering after normalisation'''
+    
+    #plot for K means clusttering after normalisation
     plt.figure()
     sns.scatterplot(x = 'greengas', y = 'methane' , hue='cluster', data = data_aft_k)
     plt.title("K-Means after normalisation")
@@ -93,19 +105,19 @@ def scatter_k_plot(data_k_plot):
     plt.show()
     return
 
-'''function to calculate the error limits'''
 
+#function to calculate the error limits'''
 def func(x,a,b,c):
     return a * np.exp(-(x-b)**2 / c)
 
 
+#finding upper and lowe limit or ranges of the function
 def err_ranges(x, func, param, sigma):
     """
-    Calculates the upper and lower limits for the function, parameters and
-    sigmas for single value or array x. Functions values are calculated for
-    all combinations of +/- sigma and the minimum and maximum is determined.
-    Can be used for all number of parameters and sigmas >=1.
-   
+    The function helps to calculate the upper and lower limits for the function,
+    parameters and sigmas for single value or array x. Function values are calculated 
+    for all the combinations of positive/negative sigma and the minimum and maximum 
+    is determined whcich can be used for all number of parameters and sigmas >=1.  
     """
  
    
@@ -128,8 +140,11 @@ def err_ranges(x, func, param, sigma):
     return lower, upper
 
 
-
+#Scatter plot of data without normalizing
 def scatter_plot():
+    """
+    The function is used to create scatter plot without fitting the curve
+    """
     
     data_n = pd.DataFrame()
     greengas = []
@@ -145,7 +160,7 @@ def scatter_plot():
     data_n['methane'] = methane
     
     
-    '''plot for scattering'''
+    #plot for scattering
     plt.scatter(data_n['greengas'],data_n['methane'])
     plt.title('Scatter plot of emissions without curve fitting')
     plt.ylabel('Green gas Emission')
@@ -154,12 +169,16 @@ def scatter_plot():
     plt.show()
     return
 
-'''adding an exponential function'''
+#adding an exponential function'''
 def expoFunc(x,a,b):
     return a**(x+b)
 
 
+#Fitting the curve without scatter
 def curve_fitting():
+    """ 
+    The function is used to fit a curve with the data without clustering the data
+    """
     
     xaxis_data = data_fr['greengas']
     yaxis_data = data_fr['methane']
@@ -168,8 +187,7 @@ def curve_fitting():
     x_mod = np.linspace(min(xaxis_data),max(xaxis_data),100)
     y_mod = expoFunc(x_mod,ab_opt,bc_opt)
 
-    '''plot for scattering after fitting the curve'''
-    #plt.scatter(xaxis_data,yaxis_data)
+    #plot for scattering after fitting the curve
     plt.plot(x_mod,y_mod,color = 'r')
     plt.title('Fitting the curve without cluster points')
     plt.ylabel('green gas emission')
@@ -178,7 +196,12 @@ def curve_fitting():
     plt.show()
     return
 
+
+#The scatter plot with both cluster and curve fit
 def scatter_plot_n():
+    """ 
+    The function is used to fit the curve over the cluster for the same data.
+    """
     
     xaxis_data = data_fr['greengas']
     yaxis_data = data_fr['methane']
@@ -187,7 +210,7 @@ def scatter_plot_n():
     x_mod = np.linspace(min(xaxis_data),max(xaxis_data),100)
     y_mod = expoFunc(x_mod,ab_opt,bc_opt)
 
-    '''plot for scattering after fitting the curve'''
+    #plot for scattering after fitting the curve
     plt.scatter(xaxis_data,yaxis_data)
     plt.plot(x_mod,y_mod,color = 'r')
     plt.title('Scatter plot with the curve fitting')
@@ -202,14 +225,14 @@ def scatter_plot_n():
 
 countries = ['Austria', 'Belgium', 'Denmark', 'France', 'Ireland', 'Portugal']
 
-#dataset with data regarding the total greenhouse emissions from a period of year 2000-2011
+#data for total greenhouse emissions from a period of year 2000-2011
 org_green_data, greenHouse_data = read_and_filter_csv("Total greenhouse gas emissions.csv")
     
 
-#dataset with data regarding the total methane gas emission from a period of year 2000-2011
+#data for total methane gas emission from a period of year 2000-2011
 org_methane_data, methaneGas_data = read_and_filter_csv("Methane emissions.csv")
 
-# calling functions
+#Invoking the functions
 data_fr = pair_plot()
 scatter_k_plot(data_fr)
 scatter_plot()
