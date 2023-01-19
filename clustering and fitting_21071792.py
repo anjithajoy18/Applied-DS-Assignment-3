@@ -26,9 +26,10 @@ def read_and_filter_csv(file_name):
 
     file_data = pd.read_csv(file_name)
     dataFr = pd.DataFrame(file_data)
-    print(dataFr)
     dataFr = dataFr[['2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011']]
     dataFr = dataFr.iloc[61:76]
+    print(file_data)
+    print(dataFr)
     return file_data, dataFr
 
 
@@ -53,26 +54,25 @@ def pair_plot():
     type(data_frame_plot)
 
     sns.pairplot(data_frame_plot[['methane','greengas']])
+    plt.savefig("graphs//pair plot.png")
 
     '''function for finding K means clusttering'''
     kmeans1 = KMeans(n_clusters=3, random_state=0).fit(data_frame_plot[['methane','greengas']])
-
     kmeans1.inertia_
     kmeans1.cluster_centers_
-
     data_frame_plot['cluster'] = kmeans1.labels_
-    
-    
+    print(data_frame_plot)
     return data_frame_plot
 
 
 
-def scatter_plot(data_k_plot):
+def scatter_k_plot(data_k_plot):
     
     '''plot for K means clusttering before normalisation'''
     plt.figure()
     sns.scatterplot(x = 'greengas', y = 'methane' , hue='cluster', data = data_k_plot)
     plt.title("K-Means before normalisation")
+    plt.savefig("graphs//Scatter of K-mean.png")
     plt.show()
 
     data_k = data_fr.drop(['cluster'], axis = 1)
@@ -89,6 +89,7 @@ def scatter_plot(data_k_plot):
     plt.figure()
     sns.scatterplot(x = 'greengas', y = 'methane' , hue='cluster', data = data_aft_k)
     plt.title("K-Means after normalisation")
+    plt.savefig("graphs//Scatter of K-mean normalized.png")
     plt.show()
     return
 
@@ -124,7 +125,6 @@ def err_ranges(x, func, param, sigma):
         y = func(x, *p)
         lower = np.minimum(lower, y)
         upper = np.maximum(upper, y)
-       
     return lower, upper
 
 
@@ -141,14 +141,16 @@ def scatter_plot():
     for i in greenHouse_data:
         greengas.extend(greenHouse_data[i])
 
-    data_frame_plot['greengas'] = greengas
-    data_frame_plot['methane'] = methane
+    data_n['greengas'] = greengas
+    data_n['methane'] = methane
+    
     
     '''plot for scattering'''
-    plt.scatter(data_ele['consumption'],data_ele['access'])
-    plt.title('Scatter plot before curve fitting')
-    plt.ylabel('Consumtion')
-    plt.xlabel('Access to electricity')
+    plt.scatter(data_n['greengas'],data_n['methane'])
+    plt.title('Scatter plot of emissions without curve fitting')
+    plt.ylabel('Green gas Emission')
+    plt.xlabel('Methane gas Emission')
+    plt.savefig("graphs//scatter plot.png")
     plt.show()
     return
 
@@ -156,34 +158,60 @@ def scatter_plot():
 def expoFunc(x,a,b):
     return a**(x+b)
 
-x_data = data_ele['consumption']
-y_data = data_ele['access']
-popt, pcov = curve_fit(expoFunc,x_data,y_data,p0=[1,0])
-popt
-a_opt, b_opt = popt
-x_mod = np.linspace(min(x_data),max(x_data),100)
-y_mod = expoFunc(x_mod,a_opt,b_opt)
 
-'''plot for scattering after fitting the curve'''
-plt.scatter(x_data,y_data)
-plt.plot(x_mod,y_mod,color = 'r')
-plt.title('Scatter plot after curve fitting')
-plt.ylabel('Consumtion')
-plt.xlabel('Access to electricity')
-plt.savefig("curvefit_after.png")
-plt.show()
+def curve_fitting():
+    
+    xaxis_data = data_fr['greengas']
+    yaxis_data = data_fr['methane']
+    popt, pcov = curve_fit(expoFunc,xaxis_data,yaxis_data,p0=[1,0])
+    ab_opt, bc_opt = popt
+    x_mod = np.linspace(min(xaxis_data),max(xaxis_data),100)
+    y_mod = expoFunc(x_mod,ab_opt,bc_opt)
+
+    '''plot for scattering after fitting the curve'''
+    #plt.scatter(xaxis_data,yaxis_data)
+    plt.plot(x_mod,y_mod,color = 'r')
+    plt.title('Fitting the curve without cluster points')
+    plt.ylabel('green gas emission')
+    plt.xlabel('Methane gas emission')
+    plt.savefig("graphs//curve_Fit.png")
+    plt.show()
+    return
+
+def scatter_plot_n():
+    
+    xaxis_data = data_fr['greengas']
+    yaxis_data = data_fr['methane']
+    popt, pcov = curve_fit(expoFunc,xaxis_data,yaxis_data,p0=[1,0])
+    ab_opt, bc_opt = popt
+    x_mod = np.linspace(min(xaxis_data),max(xaxis_data),100)
+    y_mod = expoFunc(x_mod,ab_opt,bc_opt)
+
+    '''plot for scattering after fitting the curve'''
+    plt.scatter(xaxis_data,yaxis_data)
+    plt.plot(x_mod,y_mod,color = 'r')
+    plt.title('Scatter plot with the curve fitting')
+    plt.ylabel('green gas emission')
+    plt.xlabel('Methane gas emission')
+    plt.savefig("graphs//curve_and_Cluster.png")
+    plt.show()
+    return
 
 
 
 
 countries = ['Austria', 'Belgium', 'Denmark', 'France', 'Ireland', 'Portugal']
 
-#dataset with data regarding the total greenhouse emissions from a period of year 1994-2012
+#dataset with data regarding the total greenhouse emissions from a period of year 2000-2011
 org_green_data, greenHouse_data = read_and_filter_csv("Total greenhouse gas emissions.csv")
     
 
-#dataset with data regarding the total methane gas emission from a period of year 1994-2012
+#dataset with data regarding the total methane gas emission from a period of year 2000-2011
 org_methane_data, methaneGas_data = read_and_filter_csv("Methane emissions.csv")
 
+# calling functions
 data_fr = pair_plot()
-scatter_plot(data_fr)
+scatter_k_plot(data_fr)
+scatter_plot()
+curve_fitting()
+scatter_plot_n()
