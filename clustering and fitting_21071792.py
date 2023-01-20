@@ -60,7 +60,7 @@ def pair_plot():
     # Plottting the data
     sns.pairplot(data_frame_plot[['methane', 'greengas']])
     sns.set(font_scale = 1.5)
-    plt.savefig("graphs//pair plot.png", dpi =215)
+    plt.savefig("graphs//pair plot.png", dpi = 300)
 
     # function for finding K means clusttering
     kmeans1 = KMeans(n_clusters=3, random_state=0).fit(
@@ -84,7 +84,7 @@ def scatter_k_plot(data_k_plot):
     plt.figure()
     sns.scatterplot(x='greengas', y='methane', hue='cluster', data=data_k_plot)
     plt.title("K-Means before normalisation", fontsize = 20, color='purple')
-    plt.savefig("graphs//Scatter of K-mean.png", dpi =215)
+    plt.savefig("graphs//Scatter of K-mean.png", dpi = 300)
     plt.show()
 
     data_k = data_fr.drop(['cluster'], axis=1)
@@ -101,7 +101,7 @@ def scatter_k_plot(data_k_plot):
     plt.figure()
     sns.scatterplot(x='greengas', y='methane', hue='cluster', data=data_aft_k)
     plt.title("K-Means after normalisation", fontsize = 20, color='purple')
-    plt.savefig("graphs//Scatter of K-mean normalized.png", dpi =215)
+    plt.savefig("graphs//Scatter of K-mean normalized.png", dpi=300)
     plt.show()
     return
 
@@ -163,7 +163,7 @@ def scatter_plot():
     plt.title('Scatter plot of emissions without curve fitting', fontsize=20, color='purple')
     plt.ylabel('Green gas Emission--->', fontsize=16)
     plt.xlabel('Methane gas Emission--->', fontsize=16)
-    plt.savefig("graphs//scatter plot.png", dpi =215)
+    plt.savefig("graphs//scatter plot.png", dpi = 300)
     plt.show()
     return
 
@@ -190,7 +190,7 @@ def curve_fitting():
     plt.title('Fitting the curve without cluster points', fontsize=20, color='purple')
     plt.ylabel('green gas emission--->', fontsize=16)
     plt.xlabel('Methane gas emission--->',fontsize=16)
-    plt.savefig("graphs//curve_Fit.png", dpi =215)
+    plt.savefig("graphs//curve_Fit.png", dpi = 300)
     plt.show()
     return
 
@@ -214,7 +214,7 @@ def scatter_plot_n():
     plt.title('Scatter plot with the curve fitting', fontsize=20, color='purple')
     plt.ylabel('green gas emission--->', fontsize=16)
     plt.xlabel('Methane gas emission--->', fontsize=16)
-    plt.savefig("graphs//curve_and_Cluster.png", dpi =215)
+    plt.savefig("graphs//curve_and_Cluster.png", dpi = 300)
     plt.show()
     return
 
